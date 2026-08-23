@@ -1,6 +1,5 @@
 import {
   Calendar,
-  Clock3,
   MapPin,
   Star,
 } from 'lucide-react';
