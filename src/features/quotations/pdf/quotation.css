@@ -72,16 +72,27 @@ tr {
   the same markup on-screen instead of capturing it off-screen.
 */
 .pdf-wrapper {
-    position: absolute;
-    left: 0;
+    position: fixed;
+    left: -10000px;
     top: 0;
+
     width: 210mm;
-    visibility: hidden;
+
+    visibility: visible;
+    pointer-events: none;
+
+    z-index: -1;
 }
 
 .pdf-wrapper.pdf-preview {
     position: relative;
+    left: 0;
+    top: 0;
+
     visibility: visible;
+    pointer-events: auto;
+
+    z-index: auto;
 }
 
 .client-event-grid {
@@ -272,7 +283,7 @@ tr {
     gap:8px;
     font-size:13px;
 }
-
+event-row
 .meta-row {
     display:flex;
     align-items:center;
@@ -292,47 +303,101 @@ tr {
 .meta-value {
     color: var(--muted);
 }
+/* =========================
+   EVENT DETAILS
+========================= */
 
 .event-section {
-    padding-top:2mm;
+    padding-top: 2mm;
 }
 
 .event-title {
-    margin-bottom:20px;
-    font-size:12px;
-    font-weight:600;
-    letter-spacing:3px;
+    margin: 0 0 18px 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
     color: var(--muted);
 }
 
+/* Row layout */
 .event-row {
-    display:grid;
-    grid-template-columns:22px 90px 12px 1fr;
-    align-items:center;
-    gap:8px;
-    padding:8px 0;
-    font-size:14px;
+    display: grid;
+    grid-template-columns: 22px 82px 12px minmax(0, 1fr);
+
+    align-items: center;
+
+    column-gap: 7px;
+
+    min-height: 28px;
+    padding: 3px 0;
+
+    font-size: 14px;
+    line-height: 20px;
 }
 
+/* Icon container */
 .event-icon {
+    width: 22px;
+    height: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     color: var(--rose);
-    display:flex;
-    align-items:center;
+
+    line-height: 0;
 }
 
+/* Make every Lucide icon identical */
+.event-icon svg {
+    width: 16px;
+    height: 16px;
+
+    display: block;
+
+    flex-shrink: 0;
+}
+
+/* Label */
 .event-label {
-    font-weight:500;
+    margin: 0;
+    padding: 0;
+
+    display: block;
+
+    font-weight: 600;
     color: var(--text);
+
+    line-height: 20px;
+    white-space: nowrap;
 }
 
+/* Colon */
 .event-colon {
-    color:#B5AEAC;
+    margin: 0;
+    padding: 0;
+
+    display: block;
+
+    color: #B5AEAC;
+
+    text-align: center;
+    line-height: 20px;
 }
 
+/* Value */
 .event-value {
-    color: var(--muted);
-}
+    margin: 0;
+    padding: 0;
 
+    display: block;
+
+    color: var(--muted);
+
+    line-height: 20px;
+    min-width: 0;
+}
 .package-section {
     padding-left:14mm;
     padding-right:14mm;

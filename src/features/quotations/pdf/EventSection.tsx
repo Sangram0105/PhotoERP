@@ -67,32 +67,30 @@ const EventSection = ({
       </p>
 
 
-      <Row
-        icon={<Star size={16} />}
-        label="Event Type"
-        value={event.eventType}
-      />
+<Row
+  icon={<Star />}
+  label="Event Type"
+  value={event.eventType}
+/>
+
+<Row
+  icon={<Calendar />}
+  label="Event Date"
+  value={event.eventDate}
+/>
+
+<Row
+  icon={<MapPin />}
+  label="Venue"
+  value={`${event.venue}, ${event.city}`}
+/>
 
 
-      <Row
-        icon={<Calendar size={16} />}
-        label="Event Date"
-        value={event.eventDate}
-      />
-
-
-      <Row
-        icon={<MapPin size={16} />}
-        label="Venue"
-        value={`${event.venue}, ${event.city}`}
-      />
-
-
-      <Row
+      {/* <Row
         icon={<Clock3 size={16} />}
         label="Coverage"
         value={event.eventTime}
-      />
+      /> */}
 
     </div>
 
