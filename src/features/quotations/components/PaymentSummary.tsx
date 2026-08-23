@@ -1,0 +1,89 @@
+import Card from '../../../components/ui/Card';
+import Input from '../../../components/ui/Input';
+
+interface PaymentSummaryProps {
+  subtotal: number;
+  discount: number;
+  advance: number;
+  total: number;
+  balance: number;
+
+  setDiscount: (value: number) => void;
+  setAdvance: (value: number) => void;
+
+  readOnly?: boolean;
+}
+
+const PaymentSummary = ({
+  subtotal,
+  discount,
+  advance,
+  total,
+  balance,
+  setDiscount,
+  setAdvance,
+  readOnly = false,
+}: PaymentSummaryProps) => {
+  return (
+    <Card title="Payment Summary">
+      <div className="space-y-6">
+        {/* Subtotal */}
+        <div className="flex items-center justify-between">
+          <span className="text-slate-600">Subtotal</span>
+
+          <span className="text-lg font-semibold">
+            ₹{subtotal.toLocaleString()}
+          </span>
+        </div>
+
+        {/* Discount */}
+        <Input
+          label="Discount"
+          type="number"
+          value={discount}
+          min={0}
+          readOnly={readOnly}
+          onChange={(e) =>
+            setDiscount(Number(e.target.value))
+          }
+        />
+
+        {/* Grand Total */}
+        <div className="flex items-center justify-between rounded-lg bg-blue-50 p-4">
+          <span className="font-medium text-slate-700">
+            Grand Total
+          </span>
+
+          <span className="text-2xl font-bold text-blue-600">
+            ₹{total.toLocaleString()}
+          </span>
+        </div>
+
+        {/* Advance */}
+        <Input
+          label="Advance Paid"
+          type="number"
+          value={advance}
+          min={0}
+          readOnly={readOnly}
+          onChange={(e) =>
+            setAdvance(Number(e.target.value))
+          }
+        />
+
+        {/* Balance */}
+        <div className="flex items-center justify-between rounded-lg bg-green-50 p-4">
+          <span className="font-medium text-slate-700">
+            Balance Amount
+          </span>
+
+          <span className="text-2xl font-bold text-green-600">
+            ₹{balance.toLocaleString()}
+          </span>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export default PaymentSummary;
