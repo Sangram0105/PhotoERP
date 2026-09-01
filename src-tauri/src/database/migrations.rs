@@ -1,5 +1,17 @@
 use rusqlite::Connection;
 
+fn column_exists(conn: &Connection, table: &str, column: &str) -> bool {
+    conn.prepare(&format!(
+        "SELECT COUNT(*) FROM pragma_table_info('{}') WHERE name = ?1",
+        table
+    ))
+    .and_then(|mut stmt| {
+        stmt.query_row([column], |row| row.get::<_, i64>(0))
+    })
+    .map(|count| count > 0)
+    .unwrap_or(false)
+}
+
 pub fn run(conn: &Connection) {
     conn.execute_batch(
         "
@@ -61,4 +73,20 @@ pub fn run(conn: &Connection) {
         ",
     )
     .expect("Failed to run migrations");
+
+    // ---------------------------
+    // Safe additive migration:
+    // Add service delivery status to quotation_services if missing.
+    // Does NOT destroy existing data.
+    // ---------------------------
+
+    if !column_exists(conn, "quotation_services", "status") {
+        conn.execute_batch(
+            "
+            ALTER TABLE quotation_services
+            ADD COLUMN status TEXT NOT NULL DEFAULT 'Pending';
+            ",
+        )
+        .expect("Failed to add status column to quotation_services");
+    }
 }

@@ -3,6 +3,8 @@ import Input from '../../../components/ui/Input';
 import Textarea from '../../../components/ui/Textarea';
 
 import { ClientDetails } from '../types/quotation.types';
+import type { UseQuotationState } from '../types/quotation.types';
+import type { FieldTouched } from '../types/validation.types';
 
 interface ClientDetailsFormProps {
   client: ClientDetails;
@@ -13,13 +15,60 @@ interface ClientDetailsFormProps {
   ) => void;
 
   readOnly?: boolean;
+
+  error?: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+
+  touched?: {
+    name: boolean;
+    phone: boolean;
+    email: boolean;
+  };
+
+  onTouchField?: (field: keyof FieldTouched) => void;
+  onValidateField?: (field: keyof FieldTouched, state: UseQuotationState) => void;
+  quotationState?: UseQuotationState;
 }
 
 const ClientDetailsForm = ({
   client,
   onChange,
   readOnly = false,
+  error,
+  touched,
+  onTouchField,
+  onValidateField,
+  quotationState,
 }: ClientDetailsFormProps) => {
+
+  const handleChange = (
+    field: keyof ClientDetails,
+    value: string,
+  ) => {
+    onChange(field, value);
+
+    if (field === 'name' || field === 'phone' || field === 'email') {
+      setTimeout(() => {
+        if (quotationState && onValidateField) {
+          const updatedState = {
+            ...quotationState,
+            client: { ...quotationState.client, [field]: value },
+          };
+          onValidateField(field, updatedState);
+        }
+      }, 0);
+    }
+  };
+
+  const handleBlur = (field: keyof FieldTouched) => {
+    if (onTouchField) {
+      onTouchField(field);
+    }
+  };
+
   return (
     <Card title="Client Details">
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -29,9 +78,9 @@ const ClientDetailsForm = ({
           required
           readOnly={readOnly}
           value={client.name}
-          onChange={(e) =>
-            onChange('name', e.target.value)
-          }
+          onChange={(e) => handleChange('name', e.target.value)}
+          onBlur={() => handleBlur('name')}
+          error={touched?.name ? error?.name : undefined}
         />
 
         <Input
@@ -41,9 +90,9 @@ const ClientDetailsForm = ({
           required
           readOnly={readOnly}
           value={client.phone}
-          onChange={(e) =>
-            onChange('phone', e.target.value)
-          }
+          onChange={(e) => handleChange('phone', e.target.value)}
+          onBlur={() => handleBlur('phone')}
+          error={touched?.phone ? error?.phone : undefined}
         />
 
         <Input
@@ -52,9 +101,9 @@ const ClientDetailsForm = ({
           type="email"
           readOnly={readOnly}
           value={client.email}
-          onChange={(e) =>
-            onChange('email', e.target.value)
-          }
+          onChange={(e) => handleChange('email', e.target.value)}
+          onBlur={() => handleBlur('email')}
+          error={touched?.email ? error?.email : undefined}
         />
 
         <div />

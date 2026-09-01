@@ -21,6 +21,8 @@ export interface ServiceItemDto {
   price: number;
 
   total: number;
+
+  status?: string;
 }
 
 // ==============================

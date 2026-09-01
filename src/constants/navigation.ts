@@ -2,6 +2,8 @@ import {
   Home,
 
   FileText,
+  Users,
+  Settings,
 
 } from 'lucide-react';
 
@@ -18,14 +20,19 @@ export const navigationItems = [
     path: ROUTES.QUOTATIONS,
     icon: FileText,
   },
+  {
+    title: 'Clients',
+    path: ROUTES.CLIENTS,
+    icon: Users,
+  },
   // {
   //   title: 'New Quotation',
   //   path: ROUTES.NEW_QUOTATION,
   //   icon: FilePlus,
   // },
-  // {
-  //   title: 'Settings',
-  //   path: ROUTES.SETTINGS,
-  //   icon: Settings,
-  // },
+  {
+    title: 'Settings',
+    path: ROUTES.SETTINGS,
+    icon: Settings,
+  },
 ];

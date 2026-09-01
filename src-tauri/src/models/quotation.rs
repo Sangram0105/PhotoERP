@@ -8,6 +8,12 @@ pub struct ServiceItem {
     pub quantity: i32,
     pub price: f64,
     pub total: f64,
+    #[serde(default = "default_status")]
+    pub status: String,
+}
+
+fn default_status() -> String {
+    "Pending".to_string()
 }
 
 #[derive(Debug, Serialize, Deserialize)]

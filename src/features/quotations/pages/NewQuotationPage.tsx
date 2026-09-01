@@ -2,12 +2,12 @@ import { useRef, useState } from 'react';
 
 import QuotationForm from '../components/QuotationForm';
 import { useQuotation } from '../hooks/useQuotation';
+import { useQuotationValidation } from '../hooks/useQuotationValidation';
 
 import { quotationService } from '../../../services/quotation.service';
 
 import { mapQuotationToDto } from '../../../utils/quotationMapper';
 import { mapQuotationToPdf } from '../../../utils/pdfMapper';
-
 
 import generateQuotationPdf from '../pdf/generateQuotationPdf';
 import PdfPreview from '../pdf/PdfPreview';
@@ -15,6 +15,7 @@ import { toastDismiss, toastError, toastInfo, toastLoading, toastSuccess } from 
 
 const NewQuotationPage = () => {
   const quotation = useQuotation();
+  const validation = useQuotationValidation();
 
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -25,62 +26,69 @@ const NewQuotationPage = () => {
     mapQuotationToDto(quotation.formState),
   );
 
-const handleSaveQuotation = async () => {
-  const toastId = toastLoading('Saving quotation...');
+  const handleSaveQuotation = async () => {
+    const isValid = validation.validate(quotation.formState);
+    if (!isValid) {
+      toastError('Please fix the errors before saving');
+      return;
+    }
 
-  try {
-    setLoading(true);
+    const toastId = toastLoading('Saving quotation...');
 
-    const dto = mapQuotationToDto(quotation.formState);
+    try {
+      setLoading(true);
 
-    await quotationService.saveQuotation(dto);
+      const dto = mapQuotationToDto(quotation.formState);
 
-    toastDismiss(toastId);
-    toastSuccess('Quotation saved successfully');
-  } catch (error) {
-    console.error(error);
+      await quotationService.saveQuotation(dto);
 
-    toastDismiss(toastId);
-    toastError('Failed to save quotation');
-  } finally {
-    setLoading(false);
-  }
-};
+      validation.clearErrors();
+      toastDismiss(toastId);
+      toastSuccess('Quotation saved successfully');
+    } catch (error) {
+      console.error(error);
+
+      toastDismiss(toastId);
+      toastError('Failed to save quotation');
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
-   const handleSaveDraft = () => {
-  toastInfo('Draft feature coming soon');
-};
-  
+  const handleSaveDraft = () => {
+    toastInfo('Draft feature coming soon');
+  };
+
 
   const handleGeneratePdf = async () => {
-  if (!pdfRef.current) {
-    toastError('PDF preview not available');
-    return;
-  }
+    if (!pdfRef.current) {
+      toastError('PDF preview not available');
+      return;
+    }
 
-  try {
-    await generateQuotationPdf({
-      element: pdfRef.current,
-      fileName: pdfQuotation.quotationNo,
-    });
+    try {
+      await generateQuotationPdf({
+        element: pdfRef.current,
+        fileName: pdfQuotation.quotationNo,
+      });
 
-    toastSuccess('PDF generated successfully');
-  } catch (error) {
-    console.error(error);
+      toastSuccess('PDF generated successfully');
+    } catch (error) {
+      console.error(error);
 
-    toastError('Failed to generate PDF');
-  }
-};
+      toastError('Failed to generate PDF');
+    }
+  };
 
-const handlePrint = () => {
-  toastInfo('Print feature coming soon');
-};
+  const handlePrint = () => {
+    toastInfo('Print feature coming soon');
+  };
 
 
-const handleCancel = () => {
-  toastInfo('Cancelled');
-};
+  const handleCancel = () => {
+    toastInfo('Cancelled');
+  };
 
   return (
     <>
@@ -93,6 +101,10 @@ const handleCancel = () => {
         onGeneratePdf={handleGeneratePdf}
         onPrint={handlePrint}
         onCancel={handleCancel}
+        errors={validation.errors}
+        touched={validation.touched}
+        onTouchField={validation.touchField}
+        onValidateField={validation.validateField}
       />
 
       {/* Hidden component used only for PDF generation */}

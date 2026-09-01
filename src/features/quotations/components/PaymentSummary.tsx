@@ -12,6 +12,11 @@ interface PaymentSummaryProps {
   setAdvance: (value: number) => void;
 
   readOnly?: boolean;
+
+  error?: {
+    discount: string;
+    advance: string;
+  };
 }
 
 const PaymentSummary = ({
@@ -23,6 +28,7 @@ const PaymentSummary = ({
   setDiscount,
   setAdvance,
   readOnly = false,
+  error,
 }: PaymentSummaryProps) => {
   return (
     <Card title="Payment Summary">
@@ -46,6 +52,7 @@ const PaymentSummary = ({
           onChange={(e) =>
             setDiscount(Number(e.target.value))
           }
+          error={error?.discount}
         />
 
         {/* Grand Total */}
@@ -69,6 +76,7 @@ const PaymentSummary = ({
           onChange={(e) =>
             setAdvance(Number(e.target.value))
           }
+          error={error?.advance}
         />
 
         {/* Balance */}

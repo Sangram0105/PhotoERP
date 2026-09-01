@@ -5,5 +5,7 @@ export const ROUTES = {
   VIEW_QUOTATION: '/quotations/:id',
   EDIT_QUOTATION: '/quotations/edit/:id',
   SETTINGS: '/settings',
+  CLIENTS: '/clients',
+  CLIENT_DETAILS: '/clients/:id',
 
 } as const;

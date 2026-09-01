@@ -12,8 +12,18 @@ use commands::{
         update_quotation,
         
     },
+    client::{
+        get_clients,
+        get_client_details,
+        update_service_status,
+    },
     dashboard::get_dashboard_stats,
     revenue::get_monthly_revenue,
+    data_management::{
+        backup_database,
+        restore_database,
+        get_database_info,
+    },
 };
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -45,6 +55,12 @@ pub fn run() {
     update_quotation,
     get_dashboard_stats,
     get_monthly_revenue,
+    get_clients,
+    get_client_details,
+    update_service_status,
+    backup_database,
+    restore_database,
+    get_database_info,
     
      ]) 
      .run(tauri::generate_context!())

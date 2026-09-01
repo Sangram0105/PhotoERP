@@ -20,6 +20,8 @@ interface ServicesTableProps {
   ) => void;
 
   readOnly?: boolean;
+
+  error?: string;
 }
 
 const ServicesTable = ({
@@ -28,6 +30,7 @@ const ServicesTable = ({
   removeService,
   updateService,
   readOnly = false,
+  error,
 }: ServicesTableProps) => {
   return (
     <div className="space-y-4">
@@ -45,6 +48,10 @@ const ServicesTable = ({
           </Button>
         )}
       </div>
+
+      {error && (
+        <p className="text-sm text-red-500">{error}</p>
+      )}
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table className="min-w-full">

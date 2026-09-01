@@ -4,6 +4,9 @@ import AppLayout from '../components/layout/AppLayout';
 
 import DashboardPage from '../features/dashboard/pages/DashboardPage';
 import QuotationListPage from '../features/quotations/pages/QuotationListPage';
+import ClientsPage from '../features/clients/pages/ClientsPage';
+import ClientDetailsPage from '../features/clients/pages/ClientDetailsPage';
+import DataManagementPage from '../features/settings/pages/DataManagementPage';
 
 import { ROUTES } from '../constants/routes';
 import NewQuotationPage from '../features/quotations/pages/NewQuotationPage';
@@ -23,6 +26,18 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.QUOTATIONS.substring(1),
         element: <QuotationListPage />,
+      },
+      {
+        path: ROUTES.CLIENTS.substring(1),
+        element: <ClientsPage />,
+      },
+      {
+        path: 'clients/:id',
+        element: <ClientDetailsPage />,
+      },
+      {
+        path: ROUTES.SETTINGS.substring(1),
+        element: <DataManagementPage />,
       },
       {
         path: ROUTES.NEW_QUOTATION.substring(1),

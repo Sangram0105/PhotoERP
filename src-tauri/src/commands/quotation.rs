@@ -102,16 +102,18 @@ pub fn save_quotation(
                 service_name,
                 quantity,
                 price,
-                total
+                total,
+                status
             )
-            VALUES (?1,?2,?3,?4,?5)
+            VALUES (?1,?2,?3,?4,?5,?6)
             ",
             params![
                 quotation_id,
                 service.service_name,
                 service.quantity,
                 service.price,
-                service.total
+                service.total,
+                "Pending"
             ],
         )
         .map_err(|e| e.to_string())?;
@@ -356,7 +358,8 @@ pub fn get_quotation_by_id(
             service_name,
             quantity,
             price,
-            total
+            total,
+            status
 
         FROM quotation_services
 
@@ -375,6 +378,8 @@ pub fn get_quotation_by_id(
             price: row.get(2)?,
 
             total: row.get(3)?,
+
+            status: row.get(4)?,
         })
 
     }).map_err(|e| e.to_string())?;
@@ -491,7 +496,35 @@ pub fn update_quotation(
 .map_err(|e| e.to_string())?;
 
 
+     // Capture existing service statuses keyed by service_name so that
+     // re-inserting services during an edit preserves delivery status.
+     let mut status_map = std::collections::HashMap::<String, String>::new();
+
+     if let Ok(mut stmt) = tx.prepare(
+         "
+         SELECT service_name, status
+         FROM quotation_services
+         WHERE quotation_id = ?1
+         ",
+     ) {
+         let rows = stmt.query_map([quotation_id], |row| {
+             Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
+         });
+
+         if let Ok(rows) = rows {
+             for row in rows.flatten() {
+                 status_map.insert(row.0, row.1);
+             }
+         }
+     }
+
+
      for service in quotation.services {
+
+    let status = status_map
+        .get(&service.service_name)
+        .cloned()
+        .unwrap_or_else(|| "Pending".to_string());
 
     tx.execute(
         "
@@ -501,9 +534,10 @@ pub fn update_quotation(
             service_name,
             quantity,
             price,
-            total
+            total,
+            status
         )
-        VALUES (?1, ?2, ?3, ?4, ?5)
+        VALUES (?1, ?2, ?3, ?4, ?5, ?6)
         ",
         params![
             quotation_id,
@@ -511,6 +545,7 @@ pub fn update_quotation(
             service.quantity,
             service.price,
             service.total,
+            status,
         ],
     )
     .map_err(|e| e.to_string())?;
