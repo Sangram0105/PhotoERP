@@ -27,6 +27,11 @@
     background: var(--cream);
     color: var(--text);
     font-family: var(--font-main);
+    font-size: 13.5px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: 0.2px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -98,7 +103,7 @@ tr {
 .client-event-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 48px;
+    gap: 40px;
     padding-left: 14mm;
     padding-right: 14mm;
     padding-top: 10mm;
@@ -109,27 +114,30 @@ tr {
 }
 
 .client-label {
-    margin-bottom: 12px;
-    font-size: 12px;
+    margin-bottom: 14px;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
     color: var(--muted);
 }
 
 .client-name {
-    margin-bottom: 24px;
-    font-family: var(--font-script);
-    font-size: 42px;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--rose);
+    margin-bottom: 20px;
+    font-family: var(--font-main);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0.3px;
+    color: var(--text);
+    word-break: break-word;
 }
 
 .client-contact {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    font-size: 14px;
+    gap: 12px;
+    font-size: 13.5px;
     color: var(--text);
 }
 
@@ -137,15 +145,23 @@ tr {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-height: 20px;
 }
 
 .address-row {
     align-items: flex-start;
 }
 
+.contact-row span {
+    line-height: 20px;
+}
+
 .contact-icon {
     color: var(--rose);
     flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 0;
 }
 
 .quotation-header {
@@ -242,9 +258,10 @@ tr {
 }
 
 .tagline {
-    margin-top:24px;
-    line-height:28px;
+    margin-top:22px;
+    line-height:26px;
     font-style:italic;
+    font-size:14px;
     color: var(--muted);
 }
 
@@ -280,28 +297,32 @@ tr {
 .meta-list {
     display:flex;
     flex-direction:column;
-    gap:8px;
-    font-size:13px;
+    gap:6px;
+    font-size:13.5px;
 }
-event-row
+
 .meta-row {
     display:flex;
     align-items:center;
+    line-height: 20px;
 }
 
 .meta-label {
     width:28mm;
-    font-weight:500;
+    font-weight:600;
     color: var(--text);
+    letter-spacing: 0.4px;
 }
 
 .meta-colon {
-    margin-right:12px;
+    margin-right:10px;
     color: var(--muted);
+    width: 2px;
 }
 
 .meta-value {
     color: var(--muted);
+    font-weight: 400;
 }
 /* =========================
    EVENT DETAILS
@@ -312,26 +333,27 @@ event-row
 }
 
 .event-title {
-    margin: 0 0 18px 0;
-    font-size: 12px;
+    margin: 0 0 16px 0;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
     color: var(--muted);
 }
 
 /* Row layout */
 .event-row {
     display: grid;
-    grid-template-columns: 22px 82px 12px minmax(0, 1fr);
+    grid-template-columns: 24px 88px 14px minmax(0, 1fr);
 
     align-items: center;
 
-    column-gap: 7px;
+    column-gap: 8px;
 
-    min-height: 28px;
-    padding: 3px 0;
+    min-height: 30px;
+    padding: 4px 0;
 
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 20px;
 }
 
@@ -408,10 +430,10 @@ event-row
     display:inline-block;
     background: var(--rose);
     color:white;
-    padding:8px 24px;
-    font-size:12px;
+    padding:9px 26px;
+    font-size:11px;
     font-weight:600;
-    letter-spacing:2px;
+    letter-spacing:2.5px;
     border-radius:6px 6px 0 0;
 }
 
@@ -426,18 +448,20 @@ event-row
 }
 
 .package-table th {
-    padding:16px 20px;
+    padding:14px 20px;
     text-align:left;
-    font-size:12px;
+    font-size:11px;
     letter-spacing:2px;
     text-transform:uppercase;
     font-weight:600;
     color: var(--text);
+    border-bottom:1px solid var(--border);
 }
 
 .package-table td {
-    padding:16px 20px;
+    padding:14px 20px;
     border-top:1px solid var(--border);
+    line-height: 20px;
 }
 
 .icon-column {
@@ -449,8 +473,8 @@ event-row
 }
 
 .service-icon {
-    width:40px;
-    height:40px;
+    width:36px;
+    height:36px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -463,16 +487,19 @@ event-row
 .service-name {
     font-weight:600;
     color: var(--text);
+    font-size: 13.5px;
 }
 
 .service-detail {
     color: var(--muted);
+    font-size: 13px;
 }
 
 .service-price {
     text-align:right;
     font-weight:600;
     color: var(--text);
+    font-size: 13.5px;
 }
 
 .empty-row {
@@ -492,9 +519,10 @@ event-row
 
 .terms-section h3 {
     margin-bottom:16px;
-    font-size:12px;
+    font-size:11px;
     font-weight:600;
     letter-spacing:2px;
+    text-transform:uppercase;
     color: var(--text);
 }
 
@@ -503,7 +531,7 @@ event-row
     padding-left: 0;
     margin: 0;
     font-size:13px;
-    line-height:28px;
+    line-height:30px;
     color: var(--muted);
 }
 
@@ -516,8 +544,9 @@ event-row
 .amount-row {
     display:flex;
     justify-content:space-between;
-    padding:6px 0;
-    font-size:14px;
+    align-items:center;
+    padding:7px 0;
+    font-size:13.5px;
 }
 
 .amount-row span {
@@ -543,7 +572,7 @@ event-row
     background: var(--rose);
     color:white;
     padding:16px 24px;
-    border-radius:6px;
+    border-radius:8px;
 }
 
 .grand-total div {
@@ -553,20 +582,21 @@ event-row
 }
 
 .grand-total span {
-    font-size:14px;
+    font-size:13px;
     font-weight:600;
-    letter-spacing:1px;
+    letter-spacing:1.5px;
 }
 
 .grand-total strong {
-    font-size:30px;
+    font-size:28px;
     font-weight:700;
+    letter-spacing:0.5px;
 }
 
 .quotation-footer {
-    margin-top:12mm;
+    margin-top:14mm;
     background: var(--rose);
-    padding:8mm 14mm;
+    padding:9mm 14mm;
     color:white;
 }
 
@@ -587,7 +617,12 @@ event-row
 .footer-row {
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:10px;
+    line-height: 18px;
+}
+
+.footer-row svg {
+    flex-shrink: 0;
 }
 
 .social-icons {

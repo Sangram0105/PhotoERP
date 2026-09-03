@@ -8,14 +8,12 @@ interface TotalsSectionProps {
 
 const TotalsSection = ({
   subtotal,
-  discount,
   advance,
   total,
   balance,
 }: TotalsSectionProps) => {
 
   return (
-
     <section className="totals-section">
 
 
@@ -64,14 +62,6 @@ const TotalsSection = ({
           <span>Subtotal</span>
           <strong>
             ₹ {subtotal.toLocaleString('en-IN')}
-          </strong>
-        </div>
-
-
-        <div className="amount-row">
-          <span>Discount</span>
-          <strong>
-            ₹ {discount.toLocaleString('en-IN')}
           </strong>
         </div>
 

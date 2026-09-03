@@ -7,7 +7,6 @@ interface Props {
 const QuotationMeta = ({
   quotationNo,
   quotationDate,
-  validTill,
 }: Props) => {
 
   const rows = [
@@ -18,10 +17,6 @@ const QuotationMeta = ({
     {
       label: 'Date',
       value: quotationDate,
-    },
-    {
-      label: 'Valid Till',
-      value: validTill,
     },
   ];
 

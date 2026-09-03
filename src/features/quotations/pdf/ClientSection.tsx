@@ -28,9 +28,6 @@ const ClientSection = ({
 
       <h2
         className="client-name"
-        style={{
-          fontFamily: "'Dancing Script', cursive",
-        }}
       >
         {client.name}
       </h2>
