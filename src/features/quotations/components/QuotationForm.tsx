@@ -14,10 +14,8 @@ interface QuotationFormProps {
   loading: boolean;
 
   onSaveQuotation?: () => void;
-  onSaveDraft?: () => void;
   onUpdateQuotation?: () => void;
   onGeneratePdf?: () => void;
-  onPrint?: () => void;
   onCancel?: () => void;
   onEdit?: () => void;
 
@@ -34,9 +32,7 @@ const QuotationForm = ({
   onUpdateQuotation,
   onEdit,
   onSaveQuotation,
-  onSaveDraft,
   onGeneratePdf,
-  onPrint,
   onCancel,
   errors,
   touched,
@@ -125,11 +121,9 @@ const QuotationForm = ({
       <QuotationActions
         mode={mode}
         loading={loading}
-        onSaveDraft={onSaveDraft}
         onUpdateQuotation={onUpdateQuotation}
         onSaveQuotation={onSaveQuotation}
         onGeneratePdf={onGeneratePdf}
-        onPrint={onPrint}
         onCancel={onCancel}
         onEdit={onEdit}
       />

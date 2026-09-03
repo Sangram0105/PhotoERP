@@ -3,13 +3,13 @@ import Input from '../../../components/ui/Input';
 
 interface PaymentSummaryProps {
   subtotal: number;
-  discount: number;
-  advance: number;
+  discount: number | '';
+  advance: number | '';
   total: number;
   balance: number;
 
-  setDiscount: (value: number) => void;
-  setAdvance: (value: number) => void;
+  setDiscount: (value: number | '') => void;
+  setAdvance: (value: number | '') => void;
 
   readOnly?: boolean;
 
@@ -49,9 +49,15 @@ const PaymentSummary = ({
           value={discount}
           min={0}
           readOnly={readOnly}
-          onChange={(e) =>
-            setDiscount(Number(e.target.value))
-          }
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val === '') {
+              setDiscount('');
+            } else {
+              const num = Number(val);
+              setDiscount(num < 0 ? 0 : num);
+            }
+          }}
           error={error?.discount}
         />
 
@@ -73,9 +79,15 @@ const PaymentSummary = ({
           value={advance}
           min={0}
           readOnly={readOnly}
-          onChange={(e) =>
-            setAdvance(Number(e.target.value))
-          }
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val === '') {
+              setAdvance('');
+            } else {
+              const num = Number(val);
+              setAdvance(num < 0 ? 0 : num);
+            }
+          }}
           error={error?.advance}
         />
 

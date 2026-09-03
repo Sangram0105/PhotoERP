@@ -41,7 +41,6 @@ const EditQuotationPage = () => {
     }
   };
 
-
   const handleUpdateQuotation = async () => {
     const isValid = validation.validate(quotation.formState);
     if (!isValid) {
@@ -52,9 +51,7 @@ const EditQuotationPage = () => {
     const toastId = toastLoading('Updating quotation...');
 
     try {
-      const dto = mapQuotationToDto(
-        quotation.formState
-      );
+      const dto = mapQuotationToDto(quotation.formState);
 
       await quotationService.updateQuotation(dto);
 
@@ -70,15 +67,9 @@ const EditQuotationPage = () => {
     }
   };
 
-  const handleSaveDraft = () => {
-    console.log('Save Draft');
-  };
-
-
   const pdfQuotation = mapQuotationToPdf(
     mapQuotationToDto(quotation.formState),
   );
-
 
   const handleGeneratePdf = async () => {
     if (!pdfRef.current) return;
@@ -87,14 +78,6 @@ const EditQuotationPage = () => {
       element: pdfRef.current,
       fileName: pdfQuotation.quotationNo,
     });
-  };
-
-  const handlePrint = () => {
-    console.log('Print');
-  };
-
-  const handleCancel = () => {
-    navigate(-1);
   };
 
   if (loading) {
@@ -107,10 +90,8 @@ const EditQuotationPage = () => {
       loading={false}
       mode='edit'
       onUpdateQuotation={handleUpdateQuotation}
-      onSaveDraft={handleSaveDraft}
       onGeneratePdf={handleGeneratePdf}
-      onPrint={handlePrint}
-      onCancel={handleCancel}
+      onCancel={() => navigate(-1)}
       errors={validation.errors}
       touched={validation.touched}
       onTouchField={validation.touchField}

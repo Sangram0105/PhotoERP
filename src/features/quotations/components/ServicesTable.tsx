@@ -62,10 +62,6 @@ const ServicesTable = ({
               </th>
 
               <th className="p-4 text-center">
-                Qty
-              </th>
-
-              <th className="p-4 text-center">
                 Price
               </th>
 
@@ -85,7 +81,7 @@ const ServicesTable = ({
             {services.length === 0 ? (
               <tr>
                 <td
-                  colSpan={readOnly ? 4 : 5}
+                  colSpan={readOnly ? 3 : 4}
                   className="p-8 text-center text-slate-500"
                 >
                   No services added.
@@ -125,39 +121,26 @@ const ServicesTable = ({
                     </select>
                   </td>
 
-                  <td className="w-28 p-3">
-                    <Input
-                      type="number"
-                      readOnly={readOnly}
-                      value={service.quantity}
-                      onChange={(e) =>
-                        updateService(
-                          service.id,
-                          'quantity',
-                          Number(e.target.value),
-                        )
-                      }
-                    />
-                  </td>
-
                   <td className="w-40 p-3">
                     <Input
                       type="number"
+                      min={0}
                       readOnly={readOnly}
                       value={service.price}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
                         updateService(
                           service.id,
                           'price',
-                          Number(e.target.value),
-                        )
-                      }
+                          val < 0 ? 0 : val,
+                        );
+                      }}
                     />
                   </td>
 
                   <td className="text-center font-semibold">
                     ₹
-                    {(service.quantity * service.price).toLocaleString()}
+                    {service.price.toLocaleString()}
                   </td>
 
                   {!readOnly && (

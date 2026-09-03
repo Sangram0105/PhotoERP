@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import QuotationForm from '../components/QuotationForm';
 import { useQuotation } from '../hooks/useQuotation';
@@ -11,16 +12,16 @@ import { mapQuotationToPdf } from '../../../utils/pdfMapper';
 
 import generateQuotationPdf from '../pdf/generateQuotationPdf';
 import PdfPreview from '../pdf/PdfPreview';
-import { toastDismiss, toastError, toastInfo, toastLoading, toastSuccess } from '../../../utils/toast';
+import { toastDismiss, toastError, toastLoading, toastSuccess } from '../../../utils/toast';
 
 const NewQuotationPage = () => {
+  const navigate = useNavigate();
   const quotation = useQuotation();
   const validation = useQuotationValidation();
 
   const pdfRef = useRef<HTMLDivElement>(null);
 
   const [loading, setLoading] = useState(false);
-
 
   const pdfQuotation = mapQuotationToPdf(
     mapQuotationToDto(quotation.formState),
@@ -55,12 +56,6 @@ const NewQuotationPage = () => {
     }
   };
 
-
-  const handleSaveDraft = () => {
-    toastInfo('Draft feature coming soon');
-  };
-
-
   const handleGeneratePdf = async () => {
     if (!pdfRef.current) {
       toastError('PDF preview not available');
@@ -81,15 +76,6 @@ const NewQuotationPage = () => {
     }
   };
 
-  const handlePrint = () => {
-    toastInfo('Print feature coming soon');
-  };
-
-
-  const handleCancel = () => {
-    toastInfo('Cancelled');
-  };
-
   return (
     <>
       <QuotationForm
@@ -97,17 +83,14 @@ const NewQuotationPage = () => {
         mode="create"
         loading={loading}
         onSaveQuotation={handleSaveQuotation}
-        onSaveDraft={handleSaveDraft}
         onGeneratePdf={handleGeneratePdf}
-        onPrint={handlePrint}
-        onCancel={handleCancel}
+        onCancel={() => navigate(-1)}
         errors={validation.errors}
         touched={validation.touched}
         onTouchField={validation.touchField}
         onValidateField={validation.validateField}
       />
 
-      {/* Hidden component used only for PDF generation */}
       <PdfPreview
         ref={pdfRef}
         quotation={pdfQuotation}

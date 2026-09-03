@@ -10,17 +10,21 @@ import { generateQuotationNumber } from '../../../utils/generateQuotationNumber'
 import { QuotationDto } from '../../../types/database';
 import { mapDtoToQuotationState } from '../../../utils/quotationMapper';
 
+const num = (v: number | string) => {
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 0 ? n : 0;
+};
+
 export const useQuotation = () => {
   // ==============================
   // Quotation Info
   // ==============================
 
-const [quotationNo, setQuotationNo] = useState(
-  generateQuotationNumber(),
-);
+  const [quotationNo, setQuotationNo] = useState(
+    generateQuotationNumber(),
+  );
 
-
-const [quotationId, setQuotationId] =
+  const [quotationId, setQuotationId] =
     useState<number | undefined>();
 
   const [quotationDate, setQuotationDate] = useState(
@@ -61,9 +65,9 @@ const [quotationId, setQuotationId] =
   // Payment
   // ==============================
 
-  const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState<number | ''>('');
 
-  const [advance, setAdvance] = useState(0);
+  const [advance, setAdvance] = useState<number | ''>('');
 
   // ==============================
   // Notes
@@ -152,46 +156,61 @@ const [quotationId, setQuotationId] =
 
   const subtotal = useMemo(() => {
     return services.reduce(
-      (sum, item) => sum + item.quantity * item.price,
+      (sum, item) => sum + num(item.price),
       0,
     );
   }, [services]);
 
   const total = useMemo(() => {
-    return subtotal - discount;
+    return subtotal - num(discount);
   }, [subtotal, discount]);
 
   const balance = useMemo(() => {
-    return total - advance;
+    return total - num(advance);
   }, [total, advance]);
 
+  // ==============================
+  // Safe setters (non-negative)
+  // ==============================
 
+  const handleSetDiscount = (v: number | '') => {
+    if (v === '' || v === 0) {
+      setDiscount(v);
+    } else {
+      setDiscount(v < 0 ? 0 : v);
+    }
+  };
+
+  const handleSetAdvance = (v: number | '') => {
+    if (v === '' || v === 0) {
+      setAdvance(v);
+    } else {
+      setAdvance(v < 0 ? 0 : v);
+    }
+  };
 
   const loadQuotation = (dto: QuotationDto) => {
-  const state = mapDtoToQuotationState(dto);
+    const state = mapDtoToQuotationState(dto);
 
-  setQuotationNo(state.quotationNo);
-  setQuotationDate(state.quotationDate);
-  setQuotationId(state.id);
-  setClient(state.client);
- 
-  setEvent(state.event);
+    setQuotationNo(state.quotationNo);
+    setQuotationDate(state.quotationDate);
+    setQuotationId(state.id);
+    setClient(state.client);
 
-  setServices(state.services);
+    setEvent(state.event);
 
-  setDiscount(state.discount);
+    setServices(state.services);
 
-  setAdvance(state.advance);
+    setDiscount(state.discount);
 
-  setNotes(state.notes);
-};
+    setAdvance(state.advance);
+
+    setNotes(state.notes);
+  };
 
   // ==============================
   // Complete Form State
   // ==============================
-
-
-
 
   const formState: UseQuotationState = {
     id: quotationId,
@@ -205,8 +224,8 @@ const [quotationId, setQuotationId] =
 
     notes,
 
-    discount,
-    advance,
+    discount: num(discount),
+    advance: num(advance),
 
     subtotal,
     total,
@@ -235,12 +254,12 @@ const [quotationId, setQuotationId] =
     balance,
 
     // Setters
-    
+
     setQuotationDate,
 
     setNotes,
-    setDiscount,
-    setAdvance,
+    setDiscount: handleSetDiscount,
+    setAdvance: handleSetAdvance,
 
     // Methods
     updateClient,

@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import QuotationForm from '../components/QuotationForm';
 
-
 import { useQuotation } from '../hooks/useQuotation';
 import { quotationService } from '../../../services/quotation.service';
 
@@ -48,46 +47,36 @@ const ViewQuotationPage = () => {
     mapQuotationToDto(quotation.formState),
   );
 
-const handleGeneratePdf = async () => {
+  const handleGeneratePdf = async () => {
+    if (!pdfRef.current) return;
 
-  if (!pdfRef.current) return;
+    toastSuccess('pdf generated successfully!!');
 
-  toastSuccess('pdf generated successfully!!');
+    await document.fonts.ready;
 
-  await document.fonts.ready;
+    const images =
+      Array.from(
+        pdfRef.current.querySelectorAll('img')
+      );
 
-console.log(
- "HEIGHT:",
- pdfRef.current?.getBoundingClientRect().height
-);
-  const images =
-    Array.from(
-      pdfRef.current.querySelectorAll('img')
+    await Promise.all(
+      images.map((img) => {
+        if (img.complete) {
+          return Promise.resolve();
+        }
+
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      })
     );
 
-
-  await Promise.all(
-    images.map((img) => {
-
-      if (img.complete) {
-        return Promise.resolve();
-      }
-
-      return new Promise((resolve) => {
-        img.onload = resolve;
-        img.onerror = resolve;
-      });
-
-    })
-  );
-
-
-  await generateQuotationPdf({
-    element: pdfRef.current,
-    fileName: pdfQuotation.quotationNo,
-  });
-
-};
+    await generateQuotationPdf({
+      element: pdfRef.current,
+      fileName: pdfQuotation.quotationNo,
+    });
+  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -100,7 +89,6 @@ console.log(
         mode="view"
         loading={false}
         onGeneratePdf={handleGeneratePdf}
-        onPrint={() => window.print()}
         onCancel={() => navigate(-1)}
         onEdit={() => navigate(`/quotations/edit/${id}`)}
       />

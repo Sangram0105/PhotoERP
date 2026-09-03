@@ -36,7 +36,7 @@ export const mapQuotationToPdf = (
     services: quotation.services.map((service, index) => ({
       id: index + 1,
       serviceName: service.service_name,
-      quantity: service.quantity,
+      quantity: 1,
       price: service.price,
     })),
 
