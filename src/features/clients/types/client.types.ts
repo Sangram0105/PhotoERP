@@ -48,8 +48,23 @@ export interface ClientEvent {
   event_time: string;
   venue: string;
   city: string;
+  total: number;
+  paid: number;
+  pending: number;
+  payment_status: string;
   services: ClientEventService[];
   overall_status: string;
+}
+
+// ==============================
+// Client Financial Summary
+// ==============================
+
+export interface ClientFinancialSummary {
+  total_business: number;
+  amount_paid: number;
+  pending_amount: number;
+  payment_status: string;
 }
 
 // ==============================
@@ -60,4 +75,5 @@ export interface ClientDetails {
   client: ClientInfo;
   events: ClientEvent[];
   overall_status: string;
+  financial: ClientFinancialSummary;
 }

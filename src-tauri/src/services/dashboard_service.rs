@@ -28,11 +28,12 @@ pub fn get_dashboard_stats(
 
     // -----------------------------------
     // Revenue
+    // Revenue = SUM(all payments)
     // -----------------------------------
 
     let total_revenue: f64 = conn
         .query_row(
-            "SELECT IFNULL(SUM(total),0) FROM quotations",
+            "SELECT IFNULL(SUM(amount), 0) FROM payments",
             [],
             |row| row.get(0),
         )
@@ -40,11 +41,24 @@ pub fn get_dashboard_stats(
 
     // -----------------------------------
     // Pending Balance
+    // Pending = SUM(quotation.total - paid_amount)
     // -----------------------------------
 
     let pending_balance: f64 = conn
         .query_row(
-            "SELECT IFNULL(SUM(balance),0) FROM quotations",
+            "
+            SELECT IFNULL(
+                SUM(quotations.total - IFNULL(paid_totals.paid, 0)),
+                0
+            )
+            FROM quotations
+            LEFT JOIN (
+                SELECT quotation_id, SUM(amount) AS paid
+                FROM payments
+                GROUP BY quotation_id
+            ) AS paid_totals
+            ON paid_totals.quotation_id = quotations.id
+            ",
             [],
             |row| row.get(0),
         )

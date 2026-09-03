@@ -28,8 +28,20 @@ pub struct ClientEvent {
     pub event_time: String,
     pub venue: String,
     pub city: String,
+    pub total: f64,
+    pub paid: f64,
+    pub pending: f64,
+    pub payment_status: String,
     pub services: Vec<ClientEventService>,
     pub overall_status: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ClientFinancialSummary {
+    pub total_business: f64,
+    pub amount_paid: f64,
+    pub pending_amount: f64,
+    pub payment_status: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -37,6 +49,7 @@ pub struct ClientDetails {
     pub client: ClientInfo,
     pub events: Vec<ClientEvent>,
     pub overall_status: String,
+    pub financial: ClientFinancialSummary,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

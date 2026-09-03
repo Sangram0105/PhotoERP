@@ -7,10 +7,54 @@ use crate::{
         ClientDetails,
         ClientEvent,
         ClientEventService,
+        ClientFinancialSummary,
         ClientInfo,
         ClientListItem,
     },
 };
+
+fn payment_status_calc(total: f64, paid: f64) -> String {
+    let pending = total - paid;
+
+    if pending <= 0.0 && paid > 0.0 {
+        "Paid".to_string()
+    } else if paid > 0.0 {
+        "Partial".to_string()
+    } else {
+        "Pending".to_string()
+    }
+}
+
+fn quotation_financial(
+    conn: &rusqlite::Connection,
+    quotation_id: i64,
+) -> (f64, f64, f64, String) {
+    let total: f64 = conn
+        .query_row(
+            "SELECT IFNULL(total, 0) FROM quotations WHERE id = ?1",
+            [quotation_id],
+            |row| row.get(0),
+        )
+        .unwrap_or(0.0);
+
+    let paid: f64 = conn
+        .query_row(
+            "SELECT IFNULL(SUM(amount), 0) FROM payments WHERE quotation_id = ?1",
+            [quotation_id],
+            |row| row.get(0),
+        )
+        .unwrap_or(0.0);
+
+    let pending = if total - paid > 0.0 {
+        total - paid
+    } else {
+        0.0
+    };
+
+    let status = payment_status_calc(total, paid);
+
+    (total, paid, pending, status)
+}
 
 fn overall_status_for_services(services: &[ClientEventService]) -> String {
     if services.is_empty() {
@@ -159,6 +203,10 @@ pub fn get_client_details(
                 event_time: row.get(4)?,
                 venue: row.get(5)?,
                 city: row.get(6)?,
+                total: 0.0,
+                paid: 0.0,
+                pending: 0.0,
+                payment_status: "Pending".to_string(),
                 services: Vec::new(),
                 overall_status: "Pending".to_string(),
             })
@@ -167,8 +215,28 @@ pub fn get_client_details(
 
     let mut events = Vec::new();
 
+    let mut client_total_business = 0.0;
+    let mut client_amount_paid = 0.0;
+    let mut client_pending_amount = 0.0;
+
     for row in rows {
         let mut event = row.map_err(|e| e.to_string())?;
+
+        // ---------------------------
+        // Load financial info from payments
+        // ---------------------------
+
+        let (total, paid, pending, payment_status) =
+            quotation_financial(&conn, event.quotation_id);
+
+        event.total = total;
+        event.paid = paid;
+        event.pending = pending;
+        event.payment_status = payment_status;
+
+        client_total_business += total;
+        client_amount_paid += paid;
+        client_pending_amount += pending;
 
         // ---------------------------
         // Load services for the event
@@ -227,10 +295,25 @@ pub fn get_client_details(
         }
     };
 
+    let financial = ClientFinancialSummary {
+        total_business: client_total_business,
+        amount_paid: client_amount_paid,
+        pending_amount: if client_pending_amount < 0.0 {
+            0.0
+        } else {
+            client_pending_amount
+        },
+        payment_status: payment_status_calc(
+            client_total_business,
+            client_amount_paid,
+        ),
+    };
+
     Ok(ClientDetails {
         client,
         events,
         overall_status,
+        financial,
     })
 }
 
