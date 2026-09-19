@@ -1,0 +1,244 @@
+import { Trash2, Plus } from 'lucide-react';
+
+import Button from '../../../components/ui/Button';
+import Input from '../../../components/ui/Input';
+
+import { ServiceItem } from '../types/quotation.types';
+
+interface ServicesTableProps {
+  services: ServiceItem[];
+
+  addService: () => void;
+
+  removeService: (id: number) => void;
+
+  updateService: (
+    id: number,
+    field: keyof ServiceItem,
+    value: string | number,
+  ) => void;
+
+  readOnly?: boolean;
+
+  error?: string;
+
+  serviceErrors?: {
+    serviceName?: string;
+    serviceQuantity?: string;
+    servicePrice?: string;
+  };
+
+  touchedServices?: Record<number, { name: boolean; quantity: boolean; price: boolean }>;
+
+  onTouchServiceField?: (serviceId: number, field: 'name' | 'quantity' | 'price') => void;
+  onValidateServiceField?: (serviceId: number, field: 'name' | 'quantity' | 'price', state: ServiceItem) => void;
+}
+
+const ServicesTable = ({
+  services,
+  addService,
+  removeService,
+  updateService,
+  readOnly = false,
+  error,
+  serviceErrors,
+  touchedServices,
+  onTouchServiceField,
+  onValidateServiceField,
+}: ServicesTableProps) => {
+  const handleServiceChange = (
+    serviceId: number,
+    field: keyof ServiceItem,
+    value: string | number,
+  ) => {
+    updateService(serviceId, field, value);
+
+    if (field === 'serviceName' || field === 'price' || field === 'quantity') {
+      setTimeout(() => {
+        if (onValidateServiceField) {
+          const service = services.find(s => s.id === serviceId);
+          if (service) {
+            const updatedService = { ...service, [field]: value };
+            onValidateServiceField(serviceId, field as 'name' | 'quantity' | 'price', updatedService);
+          }
+        }
+      }, 0);
+  };
+
+  const handleServiceBlur = (serviceId: number, field: 'name' | 'quantity' | 'price') => {
+    if (onTouchServiceField) {
+      onTouchServiceField(serviceId, field);
+    }
+  };
+
+  const getServiceError = (serviceId: number, field: 'name' | 'quantity' | 'price') => {
+    const touched = touchedServices?.[serviceId]?.[field];
+    if (!touched) return undefined;
+
+    switch (field) {
+      case 'name':
+        return serviceErrors?.serviceName;
+      case 'quantity':
+        return serviceErrors?.serviceQuantity;
+      case 'price':
+        return serviceErrors?.servicePrice;
+      default:
+        return undefined;
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">
+          Services
+        </h2>
+
+        {!readOnly && (
+          <Button
+            leftIcon={<Plus size={18} />}
+            onClick={addService}
+          >
+            Add Service
+          </Button>
+        )}
+      </div>
+
+      {error && (
+        <p className="text-sm text-red-500">{error}</p>
+      )}
+
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <table className="min-w-full">
+          <thead className="bg-slate-100">
+            <tr>
+              <th className="p-4 text-left">
+                Service
+              </th>
+
+              <th className="p-4 text-center">
+                Quantity
+              </th>
+
+              <th className="p-4 text-center">
+                Price
+              </th>
+
+              <th className="p-4 text-center">
+                Total
+              </th>
+
+              {!readOnly && (
+                <th className="p-4 text-center">
+                  Action
+                </th>
+              )}
+            </tr>
+          </thead>
+
+          <tbody>
+            {services.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={readOnly ? 4 : 5}
+                  className="p-8 text-center text-slate-500"
+                >
+                  No services added.
+                </td>
+              </tr>
+            ) : (
+              services.map((service) => (
+                <tr
+                  key={service.id}
+                  className="border-t"
+                >
+                  <td className="p-3">
+                    <Input
+                      placeholder="Enter service name"
+                      readOnly={readOnly}
+                      value={service.serviceName}
+                      onChange={(e) =>
+                        handleServiceChange(
+                          service.id,
+                          'serviceName',
+                          e.target.value,
+                        )
+                      }
+                      onBlur={() => handleServiceBlur(service.id, 'name')}
+                      error={getServiceError(service.id, 'name')}
+                      className="w-full"
+                      id={`service-name-${service.id}`}
+                      name={`service-name-${service.id}`}
+                    />
+                  </td>
+
+                  <td className="w-28 p-3">
+                    <Input
+                      type="number"
+                      min={1}
+                      readOnly={readOnly}
+                      value={service.quantity}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        handleServiceChange(
+                          service.id,
+                          'quantity',
+                          val < 1 ? 1 : val,
+                        );
+                      }}
+                      onBlur={() => handleServiceBlur(service.id, 'quantity')}
+                      error={getServiceError(service.id, 'quantity')}
+                      id={`service-quantity-${service.id}`}
+                      name={`service-quantity-${service.id}`}
+                    />
+                  </td>
+
+                  <td className="w-40 p-3">
+                    <Input
+                      type="number"
+                      min={0}
+                      readOnly={readOnly}
+                      value={service.price}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        handleServiceChange(
+                          service.id,
+                          'price',
+                          val < 0 ? 0 : val,
+                        );
+                      }}
+                      onBlur={() => handleServiceBlur(service.id, 'price')}
+                      error={getServiceError(service.id, 'price')}
+                      id={`service-price-${service.id}`}
+                      name={`service-price-${service.id}`}
+                    />
+                  </td>
+
+                  <td className="text-center font-semibold">
+                    ₹
+                    {(service.price * service.quantity).toLocaleString()}
+                  </td>
+
+                  {!readOnly && (
+                    <td className="text-center">
+                      <button
+                        onClick={() =>
+                          removeService(service.id)
+                        }
+                        className="rounded-lg p-2 text-red-500 transition hover:bg-red-50"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default ServicesTable;

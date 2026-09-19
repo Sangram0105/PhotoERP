@@ -4,8 +4,14 @@ export const ROUTES = {
   NEW_QUOTATION: '/quotations/new',
   VIEW_QUOTATION: '/quotations/:id',
   EDIT_QUOTATION: '/quotations/edit/:id',
+  PDF_PREVIEW: '/quotation/:id/pdf',
   SETTINGS: '/settings',
+  REPORTS: '/reports',
+  REPORTS_REVENUE: '/reports/revenue',
+  REPORTS_PENDING: '/reports/pending',
+  UPCOMING_EVENTS: '/events/upcoming',
   CLIENTS: '/clients',
   CLIENT_DETAILS: '/clients/:id',
-
+  EXPENSES: '/expenses',
+  NOT_FOUND: '*',
 } as const;

@@ -3,7 +3,6 @@ import { Trash2, Plus } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 
-import data from '../Data/quotation.data';
 import { ServiceItem } from '../types/quotation.types';
 
 interface ServicesTableProps {
@@ -22,6 +21,17 @@ interface ServicesTableProps {
   readOnly?: boolean;
 
   error?: string;
+
+  serviceErrors?: {
+    serviceName?: string;
+    serviceQuantity?: string;
+    servicePrice?: string;
+  };
+
+  touchedServices?: Record<number, { name: boolean; quantity: boolean; price: boolean }>;
+
+  onTouchServiceField?: (serviceId: number, field: 'name' | 'quantity' | 'price') => void;
+  onValidateServiceField?: (serviceId: number, field: 'name' | 'quantity' | 'price', state: ServiceItem) => void;
 }
 
 const ServicesTable = ({
@@ -31,7 +41,53 @@ const ServicesTable = ({
   updateService,
   readOnly = false,
   error,
+  serviceErrors,
+  touchedServices,
+  onTouchServiceField,
+  onValidateServiceField,
 }: ServicesTableProps) => {
+  const handleServiceChange = (
+    serviceId: number,
+    field: keyof ServiceItem,
+    value: string | number,
+  ) => {
+    updateService(serviceId, field, value);
+
+    if (field === 'serviceName' || field === 'price' || field === 'quantity') {
+      setTimeout(() => {
+        if (onValidateServiceField) {
+          const service = services.find(s => s.id === serviceId);
+          if (service) {
+            const updatedService = { ...service, [field]: value };
+            onValidateServiceField(serviceId, field as 'name' | 'quantity' | 'price', updatedService);
+          }
+        }
+      }, 0);
+    }
+  };
+
+  const handleServiceBlur = (serviceId: number, field: 'name' | 'quantity' | 'price') => {
+    if (onTouchServiceField) {
+      onTouchServiceField(serviceId, field);
+    }
+  };
+
+  const getServiceError = (serviceId: number, field: 'name' | 'quantity' | 'price') => {
+    const touched = touchedServices?.[serviceId]?.[field];
+    if (!touched) return undefined;
+
+    switch (field) {
+      case 'name':
+        return serviceErrors?.serviceName;
+      case 'quantity':
+        return serviceErrors?.serviceQuantity;
+      case 'price':
+        return serviceErrors?.servicePrice;
+      default:
+        return undefined;
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -62,6 +118,10 @@ const ServicesTable = ({
               </th>
 
               <th className="p-4 text-center">
+                Quantity
+              </th>
+
+              <th className="p-4 text-center">
                 Price
               </th>
 
@@ -81,7 +141,7 @@ const ServicesTable = ({
             {services.length === 0 ? (
               <tr>
                 <td
-                  colSpan={readOnly ? 3 : 4}
+                  colSpan={readOnly ? 4 : 5}
                   className="p-8 text-center text-slate-500"
                 >
                   No services added.
@@ -94,31 +154,44 @@ const ServicesTable = ({
                   className="border-t"
                 >
                   <td className="p-3">
-                    <select
+                    <Input
+                      placeholder="Enter service name"
+                      readOnly={readOnly}
                       value={service.serviceName}
-                      disabled={readOnly}
                       onChange={(e) =>
-                        updateService(
+                        handleServiceChange(
                           service.id,
                           'serviceName',
                           e.target.value,
                         )
                       }
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-blue-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
-                    >
-                      <option value="">
-                        Select Service
-                      </option>
+                      onBlur={() => handleServiceBlur(service.id, 'name')}
+                      error={getServiceError(service.id, 'name')}
+                      className="w-full"
+                      id={`service-name-${service.id}`}
+                      name={`service-name-${service.id}`}
+                    />
+                  </td>
 
-                      {data.services.map((item) => (
-                        <option
-                          key={item}
-                          value={item}
-                        >
-                          {item}
-                        </option>
-                      ))}
-                    </select>
+                  <td className="w-28 p-3">
+                    <Input
+                      type="number"
+                      min={1}
+                      readOnly={readOnly}
+                      value={service.quantity}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        handleServiceChange(
+                          service.id,
+                          'quantity',
+                          val < 1 ? 1 : val,
+                        );
+                      }}
+                      onBlur={() => handleServiceBlur(service.id, 'quantity')}
+                      error={getServiceError(service.id, 'quantity')}
+                      id={`service-quantity-${service.id}`}
+                      name={`service-quantity-${service.id}`}
+                    />
                   </td>
 
                   <td className="w-40 p-3">
@@ -129,18 +202,22 @@ const ServicesTable = ({
                       value={service.price}
                       onChange={(e) => {
                         const val = Number(e.target.value);
-                        updateService(
+                        handleServiceChange(
                           service.id,
                           'price',
                           val < 0 ? 0 : val,
                         );
                       }}
+                      onBlur={() => handleServiceBlur(service.id, 'price')}
+                      error={getServiceError(service.id, 'price')}
+                      id={`service-price-${service.id}`}
+                      name={`service-price-${service.id}`}
                     />
                   </td>
 
                   <td className="text-center font-semibold">
                     ₹
-                    {service.price.toLocaleString()}
+                    {(service.price * service.quantity).toLocaleString()}
                   </td>
 
                   {!readOnly && (

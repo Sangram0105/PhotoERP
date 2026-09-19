@@ -7,9 +7,11 @@ import QuotationHeader from './QuotationHeader';
 import ServicesTable from './ServicesTable';
 
 import type { QuotationErrors, FieldTouched } from '../types/validation.types';
+import type { UseQuotationReturn } from '../hooks/useQuotation';
+import type { UseQuotationState, ServiceItem } from '../types/quotation.types';
 
 interface QuotationFormProps {
-  quotation: any;
+  quotation: UseQuotationReturn;
   mode: 'create' | 'edit' | 'view';
   loading: boolean;
 
@@ -22,7 +24,22 @@ interface QuotationFormProps {
   errors?: QuotationErrors;
   touched?: FieldTouched;
   onTouchField?: (field: keyof FieldTouched) => void;
-  onValidateField?: (field: keyof FieldTouched, state: any) => void;
+  onValidateField?: (field: keyof FieldTouched, state: UseQuotationState) => void;
+
+  // Service validation
+  serviceErrors?: {
+    serviceName?: string;
+    serviceQuantity?: string;
+    servicePrice?: string;
+  };
+  touchedServices?: Record<number, { name: boolean; quantity: boolean; price: boolean }>;
+  onTouchServiceField?: (serviceId: number, field: 'name' | 'quantity' | 'price') => void;
+  onValidateServiceField?: (serviceId: number, field: 'name' | 'quantity' | 'price', state: ServiceItem) => void;
+
+  // Payment validation
+  paymentTouched?: { discount: boolean; advance: boolean };
+  onTouchPaymentField?: (field: 'discount' | 'advance') => void;
+  onValidatePaymentField?: (field: 'discount' | 'advance', state: { discount: number | ''; advance: number | ''; subtotal: number; total: number }) => void;
 }
 
 const QuotationForm = ({
@@ -38,6 +55,12 @@ const QuotationForm = ({
   touched,
   onTouchField,
   onValidateField,
+  touchedServices,
+  onTouchServiceField,
+  onValidateServiceField,
+  paymentTouched,
+  onTouchPaymentField,
+  onValidatePaymentField,
 }: QuotationFormProps) => {
 
   const readOnly = mode === 'view';
@@ -49,13 +72,17 @@ const QuotationForm = ({
         quotationNo={quotation.quotationNo}
         quotationDate={quotation.quotationDate}
         disabled={readOnly}
-        validTill="06-Aug-2026"
       />
 
       <ClientDetailsForm
         client={quotation.client}
         onChange={quotation.updateClient}
         readOnly={readOnly}
+        showClientSelector={mode === 'create'}
+        selectedClientId={quotation.clientId}
+        selectedClientName={quotation.client.name}
+        onSelectClient={quotation.selectClient}
+        onClearClient={quotation.clearClient}
         error={isValidating ? {
           name: errors?.clientName || '',
           phone: errors?.clientPhone || '',
@@ -95,6 +122,14 @@ const QuotationForm = ({
         updateService={quotation.updateService}
         readOnly={readOnly}
         error={isValidating ? errors?.noServices : undefined}
+        serviceErrors={isValidating ? {
+          serviceName: errors?.serviceName,
+          serviceQuantity: errors?.serviceQuantity,
+          servicePrice: errors?.servicePrice,
+        } : undefined}
+        touchedServices={isValidating ? touchedServices : undefined}
+        onTouchServiceField={isValidating ? onTouchServiceField : undefined}
+        onValidateServiceField={isValidating ? onValidateServiceField : undefined}
       />
 
       <PaymentSummary
@@ -110,6 +145,9 @@ const QuotationForm = ({
           discount: errors?.discountExceeds || '',
           advance: errors?.advanceExceeds || '',
         } : undefined}
+        touched={isValidating ? paymentTouched : undefined}
+        onTouchField={isValidating ? onTouchPaymentField : undefined}
+        onValidateField={isValidating ? onValidatePaymentField : undefined}
       />
 
       <NotesSection
