@@ -7,3 +7,4 @@ pub mod quotation_list;
 pub mod dashboard;
 pub mod reports;
 pub mod settings;
+pub mod app_lock;
