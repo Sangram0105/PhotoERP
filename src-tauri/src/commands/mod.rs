@@ -8,3 +8,4 @@ pub mod quotation;
 pub mod reports;
 pub mod revenue;
 pub mod settings;
+pub mod app_lock;

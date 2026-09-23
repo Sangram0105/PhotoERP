@@ -45,9 +45,9 @@ const PackageTable = ({
               Details
             </th>
 
-            <th className="price-column">
+            {/* <th className="price-column">
               Price (₹)
-            </th>
+            </th> */}
 
           </tr>
 
@@ -107,14 +107,14 @@ const PackageTable = ({
 
 
 
-              <td className="service-price">
+              {/* <td className="service-price">
 
                 ₹ {(
                   service.quantity *
                   service.price
                 ).toLocaleString('en-IN')}
 
-              </td>
+              </td> */}
 
 
             </tr>

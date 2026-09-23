@@ -32,6 +32,7 @@ import {
   StudioSettings,
 } from '../../../types/settings';
 import type { DatabaseInfo } from '../types/dataManagement.types';
+import SecuritySection from '../../security/components/SecuritySection';
 
 const formatBytes = (bytes: number): string => {
   if (bytes <= 0) return '0 B';
@@ -259,7 +260,7 @@ const DataManagementPage = () => {
         <h1 className="text-3xl font-bold">Settings</h1>
 
         <p className="mt-1 text-slate-500">
-          Studio details, data export, backup and restore.
+          Studio details, security, data export, backup and restore.
         </p>
       </div>
 
@@ -339,6 +340,8 @@ const DataManagementPage = () => {
           </div>
         )}
       </Card>
+
+      <SecuritySection />
 
       <Card>
         <div className="flex items-center gap-2">

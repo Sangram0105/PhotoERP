@@ -7,11 +7,11 @@ import QuotationHeader from './QuotationHeader';
 import QuotationMeta from './QuotationMeta';
 import ClientSection from './ClientSection';
 import EventSection from './EventSection';
-import PackageTable from './PackageTable';
 import TotalsSection from './TotalsSection';
 import Footer from './Footer';
 
 import type { PdfQuotation } from './types';
+import PackageTable from './PackageTable';
 
 interface Props {
   quotation: PdfQuotation;
@@ -35,9 +35,7 @@ const QuotationTemplate = forwardRef<HTMLDivElement, Props>(
               <ClientSection client={quotation.client} />
               <EventSection event={quotation.event} />
             </div>
-
-            <PackageTable services={quotation.services} />
-
+         <PackageTable services={quotation.services} />
             <TotalsSection
               subtotal={quotation.subtotal}
               discount={quotation.discount}

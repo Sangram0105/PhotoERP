@@ -102,6 +102,16 @@ export const validateSelect = (value: string, fieldName: string): string | null 
   return null;
 };
 
+export const validatePin = (pin: string): string | null => {
+  if (!pin || !pin.trim()) {
+    return 'PIN is required';
+  }
+  if (!/^\d{4,6}$/.test(pin)) {
+    return 'PIN must be 4 to 6 digits';
+  }
+  return null;
+};
+
 export const validateArrayLength = (
   arr: unknown[],
   minLength: number,
